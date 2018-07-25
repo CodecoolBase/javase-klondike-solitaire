@@ -19,7 +19,7 @@ import java.util.List;
 
 public class Game extends Pane {
 
-    private List<Card> deck = new ArrayList<>();
+    private List<Card> deck;
 
     private Pile stockPile;
     private Pile discardPile;
@@ -33,6 +33,11 @@ public class Game extends Pane {
     private static double FOUNDATION_GAP = 0;
     private static double TABLEAU_GAP = 30;
 
+    public Game() {
+        deck = Card.createNewDeck();
+        initPiles();
+        dealCards();
+    }
 
     private EventHandler<MouseEvent> onMouseClickedHandler = e -> {
         Card card = (Card) e.getSource();
@@ -77,7 +82,9 @@ public class Game extends Pane {
         if (draggedCards.isEmpty())
             return;
         Card card = (Card) e.getSource();
-        Pile pile = getValidIntersectingPile(card, tableauPiles);
+        List<Pile> bothPiles = new ArrayList<>(tableauPiles);
+        bothPiles.addAll(foundationPiles);
+        Pile pile = getValidIntersectingPile(card, bothPiles);
         //TODO
         if (pile != null) {
             handleValidMove(card, pile);
@@ -92,12 +99,6 @@ public class Game extends Pane {
         return false;
     }
 
-    public Game() {
-        deck = Card.createNewDeck();
-        initPiles();
-        dealCards();
-    }
-
     public void addMouseEventHandlers(Card card) {
         card.setOnMousePressed(onMousePressedHandler);
         card.setOnMouseDragged(onMouseDraggedHandler);
@@ -106,16 +107,33 @@ public class Game extends Pane {
     }
 
     public void refillStockFromDiscard() {
-        //TODO
+        for (Card card : discardPile.getCards()) {
+            stockPile.addCard(card);
+        }
         System.out.println("Stock refilled from discard pile.");
     }
 
     public boolean isMoveValid(Card card, Pile destPile) {
-        //TODO
-        return true;
+        if (destPile.getPileType().equals(Pile.PileType.TABLEAU)) {
+            if (destPile.isEmpty()) {
+                return card.getRank() == 13;
+            } else {
+                return (Card.isOppositeColor(card, destPile.getTopCard()) &&
+                Card.isHigherRank(destPile.getTopCard(), card));
+            }
+        } else if (destPile.getPileType().equals(Pile.PileType.FOUNDATION)) {
+            if (destPile.isEmpty()) {
+                return card.getRank() ==  1;
+            } else {
+                return (Card.isSameSuit(card, destPile.getTopCard()) &&
+                Card.isHigherRank(destPile.getTopCard(), card));
+            }
+        }
+        return false;
     }
+
     private Pile getValidIntersectingPile(Card card, List<Pile> piles) {
-        Pile result = null;
+        Pile result = card.getContainingPile();
         for (Pile pile : piles) {
             if (!pile.equals(card.getContainingPile()) &&
                     isOverPile(card, pile) &&
@@ -170,6 +188,7 @@ public class Game extends Pane {
             foundationPiles.add(foundationPile);
             getChildren().add(foundationPile);
         }
+        Iterator<Card> deckIterator = deck.iterator();
         for (int i = 0; i < 7; i++) {
             Pile tableauPile = new Pile(Pile.PileType.TABLEAU, "Tableau " + i, TABLEAU_GAP);
             tableauPile.setBlurredBackground();
@@ -181,14 +200,38 @@ public class Game extends Pane {
     }
 
     public void dealCards() {
-        Iterator<Card> deckIterator = deck.iterator();
-        //TODO
-        deckIterator.forEachRemaining(card -> {
-            stockPile.addCard(card);
-            addMouseEventHandlers(card);
-            getChildren().add(card);
-        });
+        int numberOfPile = 0;
+        int numberOfCard = 0;
+        int startPile = 0;
+        int countOfCardsToDeal = 27;
+        int countOfPiles = 7;
 
+        for (Card card : deck) {
+            if (numberOfCard > countOfCardsToDeal) {
+                stockPile.addCard(card);
+                addActionToCard(card);
+            } else {
+                tableauPiles.get(numberOfPile).addCard(card);
+                addActionToCard(card);
+                numberOfPile++;
+
+                if (numberOfPile == countOfPiles) {
+                    startPile++;
+                    numberOfPile = startPile;
+                }
+            }
+
+            if (numberOfPile == startPile + 1 || numberOfCard == countOfCardsToDeal)
+                card.flip();
+
+            numberOfCard++;
+        }
+    }
+
+    private Card addActionToCard(Card card) {
+        addMouseEventHandlers(card);
+        getChildren().add(card);
+        return card;
     }
 
     public void setTableBackground(Image tableBackground) {

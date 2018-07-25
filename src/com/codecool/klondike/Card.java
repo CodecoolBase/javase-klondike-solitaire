@@ -78,8 +78,22 @@ public class Card extends ImageView {
     }
 
     public static boolean isOppositeColor(Card card1, Card card2) {
-        //TODO
-        return true;
+        String cardColor1 = getCardColor(card1);
+        String cardColor2 = getCardColor(card2);
+
+        return !cardColor1.equals(cardColor2);
+    }
+
+    public static  String getCardColor(Card card) {
+        if(card.getSuit() == 1 || card.getSuit() == 2) {
+            return "red";
+        } else {
+            return "black";
+        }
+    }
+
+    public static boolean isHigherRank(Card card1, Card card2) {
+        return card1.getRank() == card2.getRank() + 1;
     }
 
     public static boolean isSameSuit(Card card1, Card card2) {
@@ -87,12 +101,14 @@ public class Card extends ImageView {
     }
 
     public static List<Card> createNewDeck() {
+
         List<Card> result = new ArrayList<>();
         for (int suit = 1; suit < 5; suit++) {
             for (int rank = 1; rank < 14; rank++) {
                 result.add(new Card(suit, rank, true));
             }
         }
+        Collections.shuffle(result);
         return result;
     }
 
