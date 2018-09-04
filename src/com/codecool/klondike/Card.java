@@ -93,8 +93,11 @@ public class Card extends ImageView {
                 result.add(new Card(suit, rank, true));
             }
         }
+
+        Collections.shuffle(result);
         return result;
     }
+
 
     public static void loadCardImages() {
         cardBackImage = new Image("card_images/card_back.png");

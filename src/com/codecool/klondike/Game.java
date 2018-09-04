@@ -21,6 +21,8 @@ public class Game extends Pane {
 
     private List<Card> deck = new ArrayList<>();
 
+    private final int PILES_NUM = 7;
+
     private Pile stockPile;
     private Pile discardPile;
     private List<Pile> foundationPiles = FXCollections.observableArrayList();
@@ -114,6 +116,7 @@ public class Game extends Pane {
         //TODO
         return true;
     }
+
     private Pile getValidIntersectingPile(Card card, List<Pile> piles) {
         Pile result = null;
         for (Pile pile : piles) {
@@ -170,7 +173,7 @@ public class Game extends Pane {
             foundationPiles.add(foundationPile);
             getChildren().add(foundationPile);
         }
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < PILES_NUM; i++) {
             Pile tableauPile = new Pile(Pile.PileType.TABLEAU, "Tableau " + i, TABLEAU_GAP);
             tableauPile.setBlurredBackground();
             tableauPile.setLayoutX(95 + i * 180);
@@ -181,13 +184,23 @@ public class Game extends Pane {
     }
 
     public void dealCards() {
+
         Iterator<Card> deckIterator = deck.iterator();
-        //TODO
+        Iterator<Card> deckIterator1 = deck.iterator();
+
         deckIterator.forEachRemaining(card -> {
-            stockPile.addCard(card);
             addMouseEventHandlers(card);
             getChildren().add(card);
         });
+
+        for (int i = 0; i < PILES_NUM; i++) {
+            for (int j = 0; j < i + 1; j++) {
+                tableauPiles.get(i).addCard(deckIterator1.next());
+            }
+            tableauPiles.get(i).getTopCard().flip();
+        }
+
+        deckIterator1.forEachRemaining(card -> stockPile.addCard(card));
 
     }
 
