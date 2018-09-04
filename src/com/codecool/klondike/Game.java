@@ -19,7 +19,9 @@ import java.util.List;
 
 public class Game extends Pane {
 
-    private List<Card> deck = new ArrayList<>();
+    private List<Card> deck;
+
+    private final int PILES_NUM = 7;
 
     private Pile stockPile;
     private Pile discardPile;
@@ -74,16 +76,16 @@ public class Game extends Pane {
     };
 
     private EventHandler<MouseEvent> onMouseReleasedHandler = e -> {
-        if (draggedCards.isEmpty())
-            return;
-        Card card = (Card) e.getSource();
-        Pile pile = getValidIntersectingPile(card, tableauPiles);
-        //TODO
-        if (pile != null) {
-            handleValidMove(card, pile);
-        } else {
-            draggedCards.forEach(MouseUtil::slideBack);
-            draggedCards = null;
+        if (!draggedCards.isEmpty()) {
+            Card card = (Card) e.getSource();
+            Pile pile = getValidIntersectingPile(card, tableauPiles);
+            //TODO
+            if (pile != null) {
+                handleValidMove(card, pile);
+            } else {
+                draggedCards.forEach(c -> MouseUtil.slideBack(c));
+                draggedCards.clear();
+            }
         }
     };
 
@@ -95,7 +97,15 @@ public class Game extends Pane {
     public Game() {
         deck = Card.createNewDeck();
         initPiles();
+        setupCards();
         dealCards();
+    }
+
+    private void setupCards() {
+        deck.forEach(card -> {
+            addMouseEventHandlers(card);
+            getChildren().add(card);
+        });
     }
 
     public void addMouseEventHandlers(Card card) {
@@ -114,6 +124,7 @@ public class Game extends Pane {
         //TODO
         return true;
     }
+
     private Pile getValidIntersectingPile(Card card, List<Pile> piles) {
         Pile result = null;
         for (Pile pile : piles) {
@@ -170,7 +181,7 @@ public class Game extends Pane {
             foundationPiles.add(foundationPile);
             getChildren().add(foundationPile);
         }
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < PILES_NUM; i++) {
             Pile tableauPile = new Pile(Pile.PileType.TABLEAU, "Tableau " + i, TABLEAU_GAP);
             tableauPile.setBlurredBackground();
             tableauPile.setLayoutX(95 + i * 180);
@@ -182,13 +193,13 @@ public class Game extends Pane {
 
     public void dealCards() {
         Iterator<Card> deckIterator = deck.iterator();
-        //TODO
-        deckIterator.forEachRemaining(card -> {
-            stockPile.addCard(card);
-            addMouseEventHandlers(card);
-            getChildren().add(card);
-        });
-
+        for (int i = 0; i < PILES_NUM; i++) {
+            for (int j = 0; j < i + 1; j++) {
+                tableauPiles.get(i).addCard(deckIterator.next());
+            }
+            tableauPiles.get(i).getTopCard().flip();
+        }
+        deckIterator.forEachRemaining(card -> stockPile.addCard(card));
     }
 
     public void setTableBackground(Image tableBackground) {
