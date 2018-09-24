@@ -9,6 +9,8 @@ import java.util.*;
 
 public class Card extends ImageView {
 
+    xxx;
+
     private int suit;
     private int rank;
     private boolean faceDown;
