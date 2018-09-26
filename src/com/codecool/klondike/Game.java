@@ -118,6 +118,8 @@ public class Game extends Pane {
             return true;
         else if (Arrays.asList(tableauPiles).contains(destPile))
             return true;
+
+        return false;
     }
     private Pile getValidIntersectingPile(Card card, List<Pile> piles) {
         Pile result = null;
