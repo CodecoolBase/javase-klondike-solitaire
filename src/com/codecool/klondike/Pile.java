@@ -49,7 +49,7 @@ public class Pile extends Pane {
     }
 
     public void clear() {
-        //TODO
+        cards.removeAll(cards);
     }
 
     public void addCard(Card card) {
