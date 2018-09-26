@@ -76,13 +76,16 @@ public class Game extends Pane {
             return;
         Card card = (Card) e.getSource();
         Pile pile = getValidIntersectingPile(card, tableauPiles);
+        if(pile != null) {
+            pile = getValidIntersectingPile(card, foundationPiles);
+        }
         //TODO
         if (pile != null) {
             //TODO isOpositeColor
             handleValidMove(card, pile);
         } else {
             draggedCards.forEach(MouseUtil::slideBack);
-            draggedCards = null;
+            //draggedCards = null;
         }
     };
 
@@ -114,9 +117,11 @@ public class Game extends Pane {
     }
 
     public boolean isMoveValid(Card card, Pile destPile) {
-        if (Arrays.asList(foundationPiles).contains(destPile))
+        if (foundationPiles.contains(destPile)) {
+            System.out.println("asdasd");
             return true;
-        else if (Arrays.asList(tableauPiles).contains(destPile))
+        }
+        else if (tableauPiles.contains(destPile))
             return true;
 
         return false;
