@@ -29,6 +29,6 @@ public enum Rank {
         return (cardValue - 1) == card.getRank().getValue();
     }
     public boolean nextEqual(Card card) {
-        return ((cardValue + 1) == card.getRank().getValue())
+        return ((cardValue + 1) == card.getRank().getValue());
     }
 }
