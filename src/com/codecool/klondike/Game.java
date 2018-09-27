@@ -4,6 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
@@ -12,6 +13,7 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.TextAlignment;
 
 import java.util.*;
 
@@ -178,6 +180,13 @@ public class Game extends Pane {
         discardPile.setLayoutX(285);
         discardPile.setLayoutY(20);
         getChildren().add(discardPile);
+
+        Button restartBtn = new Button("Restart");
+        restartBtn.setTextAlignment(TextAlignment.CENTER);
+        restartBtn.relocate(1300,840);
+        restartBtn.setStyle("-fx-font: 18 times-new-roman; -fx-base: #c26573;");
+        getChildren().add(restartBtn);
+
 
         for (int i = 0; i < 4; i++) {
             Pile foundationPile = new Pile(Pile.PileType.FOUNDATION, "Foundation " + i, FOUNDATION_GAP);
