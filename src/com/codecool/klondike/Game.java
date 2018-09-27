@@ -39,6 +39,7 @@ public class Game extends Pane {
         Card card = (Card) e.getSource();
         if (card.getContainingPile().getPileType() == Pile.PileType.STOCK) {
             saveMove(card);
+
             card.moveToPile(discardPile);
             card.flip();
             card.setMouseTransparent(false);
@@ -83,6 +84,7 @@ public class Game extends Pane {
         //TODO
         if (pile != null) {
             saveMove(card);
+
             handleValidMove(card, pile);
         } else {
             draggedCards.forEach(MouseUtil::slideBack);
@@ -159,7 +161,9 @@ public class Game extends Pane {
             msg = String.format("Placed %s to %s.", card, destPile.getTopCard());
         }
         System.out.println(msg);
+        
         MouseUtil.slideToDest(draggedCards, destPile);
+
         draggedCards.clear();
     }
 
@@ -189,7 +193,7 @@ public class Game extends Pane {
         Undoer.getInstance().addAction(Undoer.ActionOwner.USER, move);
     }
 
-    
+
     private void initPiles() {
         stockPile = new Pile(Pile.PileType.STOCK, "Stock", STOCK_GAP);
         stockPile.setBlurredBackground();
