@@ -180,10 +180,10 @@ public class Game extends Pane {
         }
         else {
             Boolean isLastCardFaceDown = sourcePile.getTopCard().isFaceDown();
-
+            Card saveLastCardFromPile = sourcePile.getTopCard();
             move = () -> {
                 if(isLastCardFaceDown) {
-                    sourcePile.getTopCard().flip();
+                    saveLastCardFromPile.flip();
                 }
 
                 MouseUtil.slideToDest(copyOfDraggedList, sourcePile);
