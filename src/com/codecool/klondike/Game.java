@@ -13,6 +13,7 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 
 import java.util.*;
@@ -212,6 +213,13 @@ public class Game extends Pane {
         foundationPiles.clear();
         tableauPiles.clear();
         this.getChildren().clear();
+    }
+
+    private void restart() {
+        clearPane();
+        deck = Card.createNewDeck();
+        initPiles();
+        dealCards();
     }
 
     public void dealCards() {
