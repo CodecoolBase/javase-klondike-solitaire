@@ -14,9 +14,7 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class Game extends Pane {
 
@@ -65,15 +63,20 @@ public class Game extends Pane {
         double offsetY = e.getSceneY() - dragStartY;
 
         draggedCards.clear();
-        draggedCards.add(card);
+        int draggedCardIndex = activePile.getCards().indexOf(card);
 
-        card.getDropShadow().setRadius(20);
-        card.getDropShadow().setOffsetX(10);
-        card.getDropShadow().setOffsetY(10);
+        activePile.getCards().listIterator(draggedCardIndex)
+                  .forEachRemaining(draggedCards::add);
 
-        card.toFront();
-        card.setTranslateX(offsetX);
-        card.setTranslateY(offsetY);
+        draggedCards.forEach(draggedCard -> {
+            draggedCard.getDropShadow().setRadius(20);
+            draggedCard.getDropShadow().setOffsetX(10);
+            draggedCard.getDropShadow().setOffsetY(10);
+
+            draggedCard.toFront();
+            draggedCard.setTranslateX(offsetX);
+            draggedCard.setTranslateY(offsetY);
+        });
     };
 
     private EventHandler<MouseEvent> onMouseReleasedHandler = e -> {
@@ -81,14 +84,18 @@ public class Game extends Pane {
             return;
         Card card = (Card) e.getSource();
         Pile pile = getValidIntersectingPile(card, tableauPiles);
+        if(pile == null) {
+            pile = getValidIntersectingPile(card, foundationPiles);
+        }
         //TODO
         if (pile != null) {
             saveMove(card);
-
+          
+            //TODO isOpositeColor
             handleValidMove(card, pile);
         } else {
             draggedCards.forEach(MouseUtil::slideBack);
-            draggedCards = null;
+            draggedCards.removeAll(draggedCards);
         }
     };
 
@@ -124,13 +131,23 @@ public class Game extends Pane {
     }
 
     public void refillStockFromDiscard() {
-        //TODO
+        Collections.reverse(discardPile.getCards());
+        discardPile.getCards().forEach(card -> card.flip());
+
+        MouseUtil.slideToDest(discardPile.getCards(), stockPile);
+
         System.out.println("Stock refilled from discard pile.");
     }
 
     public boolean isMoveValid(Card card, Pile destPile) {
-        //TODO
-        return true;
+        if (foundationPiles.contains(destPile)) {
+            System.out.println("asdasd");
+            return true;
+        }
+        else if (tableauPiles.contains(destPile))
+            return true;
+
+        return false;
     }
     private Pile getValidIntersectingPile(Card card, List<Pile> piles) {
         Pile result = null;
