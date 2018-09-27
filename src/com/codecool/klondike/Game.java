@@ -38,6 +38,8 @@ public class Game extends Pane {
     private EventHandler<MouseEvent> onMouseClickedHandler = e -> {
         Card card = (Card) e.getSource();
         if (card.getContainingPile().getPileType() == Pile.PileType.STOCK) {
+            saveMove(card);
+
             card.moveToPile(discardPile);
             card.flip();
             card.setMouseTransparent(false);
@@ -84,11 +86,13 @@ public class Game extends Pane {
             return;
         Card card = (Card) e.getSource();
         Pile pile = getValidIntersectingPile(card, tableauPiles);
-        if(pile != null) {
+        if(pile == null) {
             pile = getValidIntersectingPile(card, foundationPiles);
         }
         //TODO
         if (pile != null) {
+            saveMove(card);
+          
             //TODO isOpositeColor
             handleValidMove(card, pile);
         } else {
@@ -106,7 +110,21 @@ public class Game extends Pane {
         deck = Card.createNewDeck();
         initPiles();
         dealCards();
+
         addRestartBtn();
+
+        // ======= Added dummy for test ===============
+        Button button = new Button();
+        button.setText("Undo");
+        button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                Undoer.getInstance().undoAction();
+            }
+        });
+        // ============================================
+
+        getChildren().add(button);
     }
 
     public void addMouseEventHandlers(Card card) {
@@ -164,8 +182,36 @@ public class Game extends Pane {
             msg = String.format("Placed %s to %s.", card, destPile.getTopCard());
         }
         System.out.println(msg);
+        
         MouseUtil.slideToDest(draggedCards, destPile);
+
         draggedCards.clear();
+    }
+
+    private void saveMove(Card card) {
+        List<Card> copyOfDraggedList = FXCollections.observableArrayList(draggedCards);
+        Pile sourcePile = card.getContainingPile();
+        Runnable move;
+
+        if (card.getContainingPile().getPileType() == Pile.PileType.STOCK) {
+            move = () -> {
+                card.moveToPile(sourcePile);
+                card.flip();
+            };
+        }
+        else {
+            Boolean isLastCardFaceDown = sourcePile.getTopCard().isFaceDown();
+            Card saveLastCardFromPile = sourcePile.getTopCard();
+            move = () -> {
+                if(isLastCardFaceDown) {
+                    saveLastCardFromPile.flip();
+                }
+
+                MouseUtil.slideToDest(copyOfDraggedList, sourcePile);
+            };
+        }
+
+        Undoer.getInstance().addAction(Undoer.ActionOwner.USER, move);
     }
 
 
