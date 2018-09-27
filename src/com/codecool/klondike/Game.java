@@ -13,6 +13,8 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.TextAlignment;
 
 import java.util.*;
 
@@ -225,6 +227,20 @@ public class Game extends Pane {
         discardPile.setLayoutY(20);
         getChildren().add(discardPile);
 
+        Button restartBtn = new Button("Restart");
+        restartBtn.setTextAlignment(TextAlignment.CENTER);
+        restartBtn.relocate(1300,840);
+        restartBtn.setStyle("-fx-font: 18 times-new-roman; -fx-base: #c26573;");
+        getChildren().add(restartBtn);
+
+        restartBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent e) {
+                restart();
+            }
+        });
+
+
         for (int i = 0; i < 4; i++) {
             Pile foundationPile = new Pile(Pile.PileType.FOUNDATION, "Foundation " + i, FOUNDATION_GAP);
             foundationPile.setBlurredBackground();
@@ -241,6 +257,21 @@ public class Game extends Pane {
             tableauPiles.add(tableauPile);
             getChildren().add(tableauPile);
         }
+    }
+
+    private void clearPane() {
+        stockPile.clear();
+        discardPile.clear();
+        foundationPiles.clear();
+        tableauPiles.clear();
+        this.getChildren().clear();
+    }
+
+    private void restart() {
+        clearPane();
+        deck = Card.createNewDeck();
+        initPiles();
+        dealCards();
     }
 
     public void dealCards() {

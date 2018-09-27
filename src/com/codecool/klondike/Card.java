@@ -7,6 +7,8 @@ import javafx.scene.paint.Color;
 
 import java.util.*;
 
+import static java.util.Collections.*;
+
 public class Card extends ImageView {
 
     private Suit suit;
@@ -97,8 +99,10 @@ public class Card extends ImageView {
                 result.add(new Card(suit, cardRank, true));
             }
         }
+        Collections.shuffle(result);
         return result;
     }
+
 
     public static void loadCardImages() {
         cardBackImage = new Image("card_images/card_back.png");
