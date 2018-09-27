@@ -47,7 +47,7 @@ public class Card extends ImageView {
     }
 
     public String getShortName() {
-        return "S" + suit + "R" + rank.getValue();
+        return "S" + suit.getValue() + "R" + rank.getValue();
     }
 
     public DropShadow getDropShadow() {
@@ -78,8 +78,10 @@ public class Card extends ImageView {
     }
 
     public static boolean isOppositeColor(Card card1, Card card2) {
-        //TODO
-        return true;
+        if (card1.suit.getValue() <= 2 && card2.suit.getValue() > 2)
+            return true;
+
+        return false;
     }
 
     public static boolean isSameSuit(Card card1, Card card2) {
@@ -100,32 +102,14 @@ public class Card extends ImageView {
 
     public static void loadCardImages() {
         cardBackImage = new Image("card_images/card_back.png");
-        String suitName = "";
         for (Suit suit : Suit.values()) {
-            switch (suit) {
-                case HEARTS:
-                    suitName = "hearts";
-                    break;
-                case DIAMONDS:
-                    suitName = "diamonds";
-                    break;
-                case SPADES:
-                    suitName = "spades";
-                    break;
-                case CLUBS:
-                    suitName = "clubs";
-                    break;
-            }
             for (Rank cardRank: Rank.values()){
-                String cardName = suitName + cardRank.getValue();
-                String cardId = "S" + suit + "R" + cardRank.getValue();
+                String cardName = suit.getTextName() + cardRank.getValue();
+                String cardId = "S" + suit.getValue() + "R" + cardRank.getValue();
                 String imageFileName = "card_images/" + cardName + ".png";
+                System.out.println(imageFileName);
                 cardFaceImages.put(cardId, new Image(imageFileName));
             }
         }
     }
-
-
-    public enum Suit {DIAMONDS, HEARTS, CLUBS, SPADES}
-
 }
