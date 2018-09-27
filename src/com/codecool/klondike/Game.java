@@ -13,9 +13,7 @@ import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.Pane;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class Game extends Pane {
 
@@ -83,8 +81,12 @@ public class Game extends Pane {
             return;
         Card card = (Card) e.getSource();
         Pile pile = getValidIntersectingPile(card, tableauPiles);
+        if(pile != null) {
+            pile = getValidIntersectingPile(card, foundationPiles);
+        }
         //TODO
         if (pile != null) {
+            //TODO isOpositeColor
             handleValidMove(card, pile);
         } else {
             draggedCards.forEach(MouseUtil::slideBack);
@@ -111,13 +113,23 @@ public class Game extends Pane {
     }
 
     public void refillStockFromDiscard() {
-        //TODO
+        Collections.reverse(discardPile.getCards());
+        discardPile.getCards().forEach(card -> card.flip());
+
+        MouseUtil.slideToDest(discardPile.getCards(), stockPile);
+
         System.out.println("Stock refilled from discard pile.");
     }
 
     public boolean isMoveValid(Card card, Pile destPile) {
-        //TODO
-        return true;
+        if (foundationPiles.contains(destPile)) {
+            System.out.println("asdasd");
+            return true;
+        }
+        else if (tableauPiles.contains(destPile))
+            return true;
+
+        return false;
     }
     private Pile getValidIntersectingPile(Card card, List<Pile> piles) {
         Pile result = null;
