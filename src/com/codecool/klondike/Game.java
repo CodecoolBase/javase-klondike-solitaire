@@ -206,6 +206,14 @@ public class Game extends Pane {
         }
     }
 
+    private void clearPane() {
+        stockPile.clear();
+        discardPile.clear();
+        foundationPiles.clear();
+        tableauPiles.clear();
+        this.getChildren().clear();
+    }
+
     public void dealCards() {
         Iterator<Card> deckIterator = deck.iterator();
         //TODO
