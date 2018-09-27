@@ -188,6 +188,13 @@ public class Game extends Pane {
         restartBtn.setStyle("-fx-font: 18 times-new-roman; -fx-base: #c26573;");
         getChildren().add(restartBtn);
 
+        restartBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent e) {
+                restart();
+            }
+        });
+
 
         for (int i = 0; i < 4; i++) {
             Pile foundationPile = new Pile(Pile.PileType.FOUNDATION, "Foundation " + i, FOUNDATION_GAP);
