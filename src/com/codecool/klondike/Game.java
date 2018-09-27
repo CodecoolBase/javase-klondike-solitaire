@@ -147,7 +147,33 @@ public class Game extends Pane {
         draggedCards.clear();
     }
 
+    private void saveMove(Card card) {
+        List<Card> copyOfDraggedList = FXCollections.observableArrayList(draggedCards);
+        Pile sourcePile = card.getContainingPile();
+        Runnable move;
 
+        if (card.getContainingPile().getPileType() == Pile.PileType.STOCK) {
+            move = () -> {
+                card.moveToPile(sourcePile);
+                card.flip();
+            };
+        }
+        else {
+            Boolean isLastCardFaceDown = sourcePile.getTopCard().isFaceDown();
+
+            move = () -> {
+                if(isLastCardFaceDown) {
+                    sourcePile.getTopCard().flip();
+                }
+
+                MouseUtil.slideToDest(copyOfDraggedList, sourcePile);
+            };
+        }
+
+        Undoer.getInstance().addAction(Undoer.ActionOwner.USER, move);
+    }
+
+    
     private void initPiles() {
         stockPile = new Pile(Pile.PileType.STOCK, "Stock", STOCK_GAP);
         stockPile.setBlurredBackground();
